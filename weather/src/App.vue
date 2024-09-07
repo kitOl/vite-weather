@@ -6,17 +6,24 @@
           type="text"
           class="weather-form__input"
           placeholder="Enter city"
+          v-model="searchQuery"
+          @keyup.enter="weatherSearch"
         />
-        <button class="weather-form__btn">Search</button>
+        <button class="weather-form__btn" @click="weatherSearch">Search</button>
       </div>
 
-      <div class="card weather-load">Loading...</div>
+      <div class="card weather-load" v-if="loading">Loading...</div>
 
-      <div class="weather-info">
+      <div
+        class="weather-info"
+        v-show="!error && location && temperature !== 0 && description"
+      >
+        <div class="card" v-if="error">Error</div>
+
         <div class="weather-info__text">
-          <p class="card">Phuket</p>
-          <p class="card">29°C</p>
-          <p class="card">Sunny</p>
+          <p class="card">{{ location }}</p>
+          <p class="card">{{ temperature }}°C</p>
+          <p class="card">{{ description }}</p>
         </div>
       </div>
 
@@ -44,4 +51,46 @@
   </div>
 </template>
 
-<script></script>
+<script>
+export default {
+  data() {
+    return {
+      location: '',
+      temperature: 0,
+      description: '',
+      loading: false,
+      error: false,
+      searchQuery: '',
+    };
+  },
+  computed: {},
+  methods: {
+    weatherSearch() {
+      const API_KEY = '69ed7b91ab4b4d4f9f282327242604';
+      console.log('API_KEY', API_KEY);
+      this.loading = true;
+      this.error = false;
+      fetch(
+        `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${this.searchQuery}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          this.loading = false;
+          this.location = data.location.name;
+          this.temperature = data.current.temp_c;
+          this.description = data.current.condition.text;
+
+          this.resetSearchQuery();
+        })
+        .catch((error) => {
+          this.loading = false;
+          error = true;
+          console.error(error);
+        });
+    },
+    resetSearchQuery() {
+      this.searchQuery = '';
+    },
+  },
+};
+</script>
