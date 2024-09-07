@@ -16,7 +16,7 @@
 
       <div
         class="weather-info"
-        v-show="!error && location && temperature !== 0 && description"
+        v-show="!error && location && temperature !== null && description"
       >
         <div class="weather-info__text">
           <p class="card">{{ location }}</p>
@@ -59,7 +59,7 @@ export default {
   data() {
     return {
       location: '',
-      temperature: 0,
+      temperature: null,
       description: '',
       loading: false,
       error: false,
