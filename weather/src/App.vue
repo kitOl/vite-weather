@@ -1,5 +1,5 @@
 <template>
-  <div class="weather">
+  <div class="weather" :class="weatherClass">
     <div class="container">
       <div class="card weather-form">
         <input
@@ -18,14 +18,13 @@
         class="weather-info"
         v-show="!error && location && temperature !== 0 && description"
       >
-        <div class="card" v-if="error">Error</div>
-
         <div class="weather-info__text">
           <p class="card">{{ location }}</p>
           <p class="card">{{ temperature }}°C</p>
           <p class="card">{{ description }}</p>
         </div>
       </div>
+      <div class="card" v-if="error">Error</div>
 
       <div class="weather-bg">
         <div>
@@ -35,16 +34,20 @@
             alt="App Background"
           />
           <img
-            class="weather-bg overcast"
+            class="weather-bg__img overcast"
             src="./assets/overcast.jpg"
             alt="Overcast"
           />
           <img
-            class="weather-bg partly-cloudy"
+            class="weather-bg__img partly-cloudy"
             src="./assets/partly-cloudy.jpg"
             alt="Partly Cloudy"
           />
-          <img class="weather-bg sunny" src="./assets/sunny.jpg" alt="Sunny" />
+          <img
+            class="weather-bg__img sunny"
+            src="./assets/sunny.jpg"
+            alt="Sunny"
+          />
         </div>
       </div>
     </div>
@@ -63,11 +66,22 @@ export default {
       searchQuery: '',
     };
   },
-  computed: {},
+  computed: {
+    weatherClass() {
+      if (this.description.includes('Sunny')) {
+        return 'sunny';
+      } else if (this.description.includes('Overcast')) {
+        return 'overcast';
+      } else if (this.description.includes('Partly cloudy')) {
+        return 'partly-cloudy';
+      } else {
+        return '';
+      }
+    },
+  },
   methods: {
     weatherSearch() {
       const API_KEY = '69ed7b91ab4b4d4f9f282327242604';
-      console.log('API_KEY', API_KEY);
       this.loading = true;
       this.error = false;
       fetch(
@@ -84,7 +98,7 @@ export default {
         })
         .catch((error) => {
           this.loading = false;
-          error = true;
+          this.error = true;
           console.error(error);
         });
     },
